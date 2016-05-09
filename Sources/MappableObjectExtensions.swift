@@ -1,5 +1,5 @@
 import Vapor
-import GenomeJson
+@_exported import GenomeJson
 @_exported import MongoKitten
 
 public protocol Model: StringInitializable, MappableObject {
