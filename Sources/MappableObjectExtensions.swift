@@ -26,7 +26,7 @@ extension Model {
 
 extension Model {
     public func store() throws {
-        var doc = fixSerialized(document: try self.serialize())
+        let doc = fixSerialized(document: try self.serialize())
         
         let upsert: Document = ["$set": ~doc]
         
