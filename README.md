@@ -37,3 +37,39 @@ app.get("user", User.self) { request, user in
 
 app.start(port: 8080)
 ```
+
+## Featuring RequestInitializable
+
+```swift
+enum LoginError: ErrorProtocol {
+    case missingAuthenticationDetails
+}
+
+class LoginRequest: RequestInitializable {
+    let request: Request
+    let user: User?
+    var authenticated = false
+
+    required init(request: Request) throws {
+        self.request = request
+        
+        guard let username = request.data["username"].string, let password = request.data["password"].string else {
+            throw LoginError.missingAuthenticationDetails
+        }
+
+        self.user = try User.findOne(matching: "username" == ~username)
+
+        if let user = user {
+            authenticated = user.password == password
+        }
+    }
+}
+
+app.get("login") { (loginRequest: LoginRequest) in
+    if let user = loginRequest.user where loginRequest.authenticated {
+        return "Welcome \(user.username)"
+    }
+
+    return "Login failed"
+}
+```
