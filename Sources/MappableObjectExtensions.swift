@@ -4,7 +4,8 @@
 
 public protocol Model: StringInitializable, MappableObject {
     static var collection: MongoKitten.Collection { get }
-    var id: ObjectId { get }
+    var id: ObjectId { get set }
+    var metadata: Document { get set }
     
     func store() throws
     static func find(matching query: MongoKitten.Query) throws -> Cursor<Self>
@@ -25,7 +26,11 @@ extension Model {
 
 extension Model {
     public func store() throws {
-        try Self.collection.update(matching: "_id" == id, to: try self.serialize())
+        var doc = fixSerialized(document: try self.serialize())
+        
+        let upsert: Document = ["$set": ~doc]
+        
+        try Self.collection.update(matching: "_id" == id, to: upsert, upserting: true)
     }
     
     public static func find(matching query: MongoKitten.Query) throws -> Cursor<Self> {
@@ -46,5 +51,27 @@ extension Model {
     
     public func remove() throws {
         try Self.collection.remove(matching: "_id" == id)
+    }
+    
+    private func fixSerialized(document: Document) -> Document {
+        var document = document
+        
+        if document["_id"].objectIdValue == nil {
+            document["_id"] = ~id
+        }
+        
+        for (k, v) in metadata where document[k] == .nothing {
+            document[k] = v
+        }
+        
+        return document
+    }
+    
+    public func sequence(_ map: Map) throws {
+        let doc = fixSerialized(document: try serialize())
+        
+        for (k, v) in doc {
+            try v ~> map[k]
+        }
     }
 }
