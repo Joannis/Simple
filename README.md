@@ -11,13 +11,13 @@ let app = try! SimpleApplication(databaseUrl: "mongodb://127.0.0.1:27017", datab
 
 struct User: Model {
     static let collection = app.collection("users")
-    let id: ObjectId
-    let username: String
-    let age: Int
+    var id: ObjectId
+    var username: String
+    var age: Int
+    var metadata: Document
     
     func serialize() throws -> Document {
         return [
-                   "_id": ~id,
                    "username": ~username,
                    "age": ~age
         ]
@@ -27,12 +27,7 @@ struct User: Model {
         id = try ObjectId(try map.extract("_id"))
         username = try map.extract("username")
         age = try map.extract("age")
-    }
-    
-    func sequence(_ map: Map) throws {
-        try id.hexString ~> map["_id"]
-        try username ~> map["username"]
-        try age ~> map["age"]
+        metadata = ["special": true]
     }
 }
 
