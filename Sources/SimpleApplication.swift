@@ -1,11 +1,3 @@
-//
-//  SimpleApplication.swift
-//  SimplyAwesome
-//
-//  Created by Joannis Orlandos on 09/05/16.
-//
-//
-
 import Vapor
 import MongoKitten
 

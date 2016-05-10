@@ -31,7 +31,7 @@ extension Genome.Node: BSON.ValueConvertible {
 }
 
 extension BSON.Value: NodeConvertible {
-    typealias GNode = Genome.Node
+    public typealias GNode = Genome.Node
     
     public init(with node: Genome.Node, in context: Context) throws {
         self = node.makeBsonValue()
@@ -41,17 +41,17 @@ extension BSON.Value: NodeConvertible {
         switch self {
         case .array(let arr):
             let array = try arr.arrayValue.map { try $0.toNode() }
-            return GNode.array(array)
+            return .array(array)
         case .binary(_, let data):
-            return GNode.string(data.hexString)
+            return .string(data.hexString)
         case .boolean(let bool):
-            return GNode.bool(bool)
+            return .bool(bool)
         case .double(let double):
-            return GNode.number(double)
+            return .number(double)
         case .int32(let int):
-            return GNode.number(Double(int))
+            return .number(Double(int))
         case .int64(let int):
-            return GNode.number(Double(int))
+            return .number(Double(int))
         case .document(let doc):
             var object = [String: GNode]()
             
@@ -59,23 +59,23 @@ extension BSON.Value: NodeConvertible {
                 object[k] = try v.toNode()
             }
             
-            return GNode.object(object)
+            return .object(object)
         case .dateTime(let date):
-            return GNode.number(Double(date.timeIntervalSince1970))
+            return .number(Double(date.timeIntervalSince1970))
         case .javascriptCode(let code):
-            return GNode.string(code)
+            return .string(code)
         case .javascriptCodeWithScope(let code, _):
-            return GNode.string(code)
+            return .string(code)
         case .objectId(let oid):
-            return GNode.string(oid.hexString)
+            return .string(oid.hexString)
         case .regularExpression(let pattern, _):
-            return GNode.string(pattern)
+            return .string(pattern)
         case .timestamp(let timestamp):
-            return GNode.number(Double(timestamp))
+            return .number(Double(timestamp))
         case .string(let s):
-            return GNode.string(s)
+            return .string(s)
         default:
-            return GNode.null
+            return .null
         }
     }
 }
