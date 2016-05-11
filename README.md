@@ -73,3 +73,27 @@ app.get("login") { (loginRequest: LoginRequest) in
     return "Login failed"
 }
 ```
+
+## Supports reflection to reduce boilerplate
+
+```swift
+struct User: ReflectableModel {
+    static let collection = app.collection("users")
+    var _id: ObjectId
+    var metadata: Document
+    
+    var username: String
+    var age: Int
+    
+    // Plain text for example purposes ONLY
+    var password: String
+    
+    init(with map: Map) throws {
+        _id = try ObjectId(try map.extract("_id"))
+        username = try map.extract("username")
+        age = try map.extract("age")
+        password = try map.extract("password")
+        metadata = ["special": true]
+    }
+}
+```
