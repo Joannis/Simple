@@ -2,8 +2,8 @@ import Vapor
 import MongoKitten
 
 public class SimpleApplication: Application {
-    private let mongoServer: MongoKitten.Server
-    private let database: MongoKitten.Database
+    public let mongoServer: MongoKitten.Server
+    public let database: MongoKitten.Database
     
     public required init(databaseUrl: String, database: String, sessionDriver: SessionDriver? = nil) throws {
         self.mongoServer = try MongoKitten.Server(databaseUrl, automatically: true)
